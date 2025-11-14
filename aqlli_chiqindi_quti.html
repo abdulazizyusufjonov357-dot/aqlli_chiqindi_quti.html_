@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aqlli Chiqindi Quti</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    background: #f1f4f7;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: #2f2f2f;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+  p {
+    color: #555;
+    font-size: 18px;
+  }
+  #bin {
+    width: 140px;
+    height: 180px;
+    background: white;
+    border: 4px solid #555;
+    border-radius: 25px 25px 10px 10px;
+    margin: 150px auto;
+    position: relative;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    transition: background 0.4s;
+  }
+  #bin::before {
+    content: '';
+    width: 90px;
+    height: 12px;
+    background: #555;
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 6px;
+  }
+  .wastes {
+    position: relative;
+    height: 200px;
+  }
+  .waste {
+    width: 140px;
+    height: 90px;
+    border: 2px solid #555;
+    border-radius: 10px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: grab;
+    user-select: none;
+    position: absolute;
+    transition: transform 0.2s;
+  }
+</style>
+</head>
+<body>
+  <h1>♻️ Aqlli Chiqindi Quti</h1>
+  <p>Chiqqindilarni qutiga sudrab tashlang!</p>
+
+  <div class="wastes">
+    <!-- Etik o'rniga yirtilgan g'ijimlangan qogʻoz -->
+    <div class="waste" id="paper" style="top:50px; left:50px;">Yirtilgan g'ijimlangan qogʻoz</div>
+    <!-- Mushk o'rniga bo'sh butelka -->
+    <div class="waste" id="plastic" style="top:50px; left:220px;">Bo'sh butelka</div>
+    <!-- It o'rniga bo'sh konserva -->
+    <div class="waste" id="metal" style="top:50px; left:390px;">Bo'sh konserva</div>
+  </div>
+
+  <div id="bin"></div>
+
+  <script>
+    const wastes = document.querySelectorAll('.waste');
+    const bin = document.getElementById('bin');
+
+    wastes.forEach(waste => {
+      let shiftX, shiftY;
+
+      function dragStart(e) {
+        e.preventDefault();
+        const touch = e.touches ? e.touches[0] : e;
+        const rect = waste.getBoundingClientRect();
+        shiftX = touch.clientX - rect.left;
+        shiftY = touch.clientY - rect.top;
+
+        document.addEventListener(e.type === 'touchstart' ? 'touchmove' : 'mousemove', dragMove);
+        document.addEventListener(e.type === 'touchstart' ? 'touchend' : 'mouseup', dragEnd);
+      }
+
+      function dragMove(e) {
+        const touch = e.touches ? e.touches[0] : e;
+        waste.style.left = (touch.clientX - shiftX) + 'px';
+        waste.style.top = (touch.clientY - shiftY) + 'px';
+      }
+
+      function dragEnd(e) {
+        const rect = waste.getBoundingClientRect();
+        const binRect = bin.getBoundingClientRect();
+
+        if (
+          rect.left + rect.width/2 > binRect.left &&
+          rect.left + rect.width/2 < binRect.right &&
+          rect.top + rect.height/2 > binRect.top &&
+          rect.top + rect.height/2 < binRect.bottom
+        ) {
+          // Qutining rangi o'zgaradi, matn esa o'zgarmaydi
+          if (waste.id === 'metal') bin.style.backgroundColor = 'yellow';
+          else if (waste.id === 'plastic') bin.style.backgroundColor = 'red';
+          else if (waste.id === 'paper') bin.style.backgroundColor = 'green';
+        }
+
+        document.removeEventListener(e.type === 'touchend' ? 'touchmove' : 'mousemove', dragMove);
+        document.removeEventListener(e.type === 'touchend' ? 'touchend' : 'mouseup', dragEnd);
+      }
+
+      waste.addEventListener('mousedown', dragStart);
+      waste.addEventListener('touchstart', dragStart);
+      waste.ondragstart = () => false;
+    });
+  </script>
+</body>
+</html>
+Abdulaziz Yusufjonov loyihasi
